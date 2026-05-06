@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>정보 수업: 알고리즘 정렬 시뮬레이션</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; text-align: center; background-color: #f0f2f5; padding: 20px; }
+        .container { max-width: 850px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        
+        .step-label { font-size: 1.4rem; color: #ff6b6b; font-weight: bold; margin-bottom: 10px; background: #fff5f5; display: inline-block; padding: 5px 20px; border-radius: 50px; }
+        h1 { color: #2d3436; margin-top: 15px; }
+        
+        /* 안내 문구 스타일 */
+        .guide-text { background: #e3f2fd; color: #1976d2; padding: 15px; border-radius: 10px; margin: 20px 0; font-weight: bold; line-height: 1.6; }
+        .guide-text span { color: #d32f2f; text-decoration: underline; }
+
+        .info-box { display: flex; justify-content: center; gap: 50px; margin: 30px 0; font-size: 1.3rem; }
+        .counter { background: #f8f9fa; padding: 15px 25px; border-radius: 12px; border: 1px solid #ddd; }
+        .counter span { color: #0984e3; font-size: 1.8rem; vertical-align: middle; }
+
+        .slot-container { display: flex; justify-content: center; gap: 12px; margin-top: 40px; }
+        .slot { width: 80px; height: 110px; border: 2px dashed #b2bec3; border-radius: 10px; position: relative; background: #fdfdfd; }
+        .card { width: 70px; height: 100px; background-color: #0984e3; color: white; border-radius: 8px; 
+                    display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold;
+                    cursor: grab; position: absolute; top: 4px; left: 3px; user-select: none; transition: transform 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card:active { cursor: grabbing; transform: scale(1.05); }
+
+        .tmp-section { margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px; }
+        .tmp-slot { margin: 10px auto; background-color: #fff9db; border: 2px dashed #fab005; width: 80px; height: 110px; }
+        .tmp-label { font-weight: bold; color: #f39c12; font-size: 1.1rem; }
+
+        .controls { margin-top: 40px; }
+        button { padding: 12px 35px; font-size: 1.1rem; cursor: pointer; background: #2d3436; color: white; border: none; border-radius: 8px; transition: 0.3s; }
+        button:hover { background: #636e72; }
+
+        /* 하단 표식 */
+        .footer { margin-top: 50px; color: #b2bec3; font-size: 0.9rem; border-top: 1px solid #eee; padding-top: 20px; }
+        .made-by { font-weight: bold; color: #636e72; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="step-label">1단계: 버블 정렬 | 2단계: 선택 정렬</div>
+    <h1>알고리즘 정렬 챌린지</h1>
+    
+    <div class="guide-text">
+        📢 <b>알고리즘 규칙</b><br>
+        1. 두 숫자의 크기를 눈으로 비교할 때마다 키보드의 <span>[ C ]</span> 버튼을 누르세요.<br>
+        2. 자리 바꿈(Swap)을 위해 카드를 이동시키면 연산 횟수가 측정됩니다.
+    </div>
+
+    <div class="info-box">
+        <div class="counter">비교 횟수: <span id="compare-count">0</span></div>
+        <div class="counter">연산(자리바꿈) 횟수: <span id="swap-count">0</span></div>
+    </div>
+
+    <div class="slot-container">
+        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="card" draggable="true" ondragstart="drag(event)" id="c8">8</div></div>
+        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="card" draggable="true" ondragstart="drag(event)" id="c3">3</div></div>
+        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="card" draggable="true" ondragstart="drag(event)" id="c7">7</div></div>
+        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="card" draggable="true" ondragstart="drag(event)" id="c4">4</div></div>
+        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="card" draggable="true" ondragstart="drag(event)" id="c1">1</div></div>
+        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="card" draggable="true" ondragstart="drag(event)" id="c5">5</div></div>
+        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="card" draggable="true" ondragstart="drag(event)" id="c2">2</div></div>
+        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="card" draggable="true" ondragstart="drag(event)" id="c6">6</div></div>
+    </div>
+
+    <div class="tmp-section">
+        <div class="tmp-label">임시 저장 공간 (TMP)</div>
+        <div class="slot tmp-slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="tmp-slot"></div>
+    </div>
+
+    <div class="controls">
+        <button onclick="resetGame()">초기화</button>
+    </div>
+
+    <div class="footer">
+        <p>본 교구는 정보 수업 알고리즘 학습을 위해 제작되었습니다.</p>
+        <p class="made-by">Made by 정보 김효주 선생님</p>
+    </div>
+</div>
+
+<script>
+    let compareCount = 0;
+    let swapCount = 0;
+    let lastSlot = null;
+
+    function allowDrop(ev) { ev.preventDefault(); }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+        lastSlot = ev.target.parentElement;
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        let data = ev.dataTransfer.getData("text");
+        let card = document.getElementById(data);
+        let targetSlot = ev.target;
+
+        if (targetSlot.classList.contains('card')) {
+            targetSlot = targetSlot.parentElement;
+        }
+
+        if (targetSlot.classList.contains('slot') && targetSlot.children.length === 0) {
+            targetSlot.appendChild(card);
+            
+            // TMP 공간을 거쳐서 나올 때 연산 횟수 카운트
+            if(targetSlot.id !== "tmp-slot" && lastSlot.id === "tmp-slot") {
+                swapCount++;
+                document.getElementById('swap-count').innerText = swapCount;
+            }
+        }
+    }
+
+    // C키 입력 감지 (비교 횟수)
+    document.addEventListener('keydown', (e) => {
+        if(e.key.toLowerCase() === 'c' || e.key === 'ㅊ') {
+            compareCount++;
+            document.getElementById('compare-count').innerText = compareCount;
+            
+            // 시각적 피드백: 숫자 색깔 잠깐 바꾸기
+            const cntSpan = document.getElementById('compare-count');
+            cntSpan.style.color = '#e74c3c';
+            setTimeout(() => { cntSpan.style.color = '#0984e3'; }, 200);
+        }
+    });
+
+    function resetGame() {
+        if(confirm("모든 횟수와 카드 위치를 초기화할까요?")) {
+            location.reload();
+        }
+    }
+</script>
+
+</body>
+</html>
